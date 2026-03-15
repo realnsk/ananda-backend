@@ -28,9 +28,13 @@ const allowedOrigins = [
 ].filter(Boolean)
 
 app.use(cors({
-  origin: true,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true)
+    callback(new Error(`CORS blocked: ${origin}`))
+  },
   credentials: true,
 }))
+
 // ─── Body Parsing ─────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
@@ -55,6 +59,8 @@ app.use('/api/contact',   require('./routes/contact'))
 app.use('/api/newsletter',require('./routes/newsletter'))
 app.use('/api/upload',    require('./routes/upload'))
 app.use('/api/admin',     require('./routes/admin'))
+app.use('/api/members',   require('./routes/members'))
+app.use('/api/referrals', require('./routes/referrals'))
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {

@@ -67,6 +67,31 @@ const newsletterSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
 }, { timestamps: true })
 
+// ─── Member (WhatsApp Registration) ──────────────────────────────────────────
+const memberSchema = new mongoose.Schema({
+  name: { type: String, required: true, trim: true },
+  whatsapp: { type: String, required: true, trim: true },
+  email: { type: String, lowercase: true, trim: true },
+  city: { type: String, trim: true },
+  age: { type: Number },
+  joinedGroup: { type: Boolean, default: false },
+  // Referral fields
+  referralCode: { type: String, unique: true, sparse: true },
+  referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Member' },
+  referralCount: { type: Number, default: 0 },
+  referredMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Member' }],
+  stars: { type: Number, default: 0 },
+  totalRewards: { type: Number, default: 0 },
+  rewards: [{
+    type: { type: String },
+    couponCode: String,
+    message: String,
+    earnedAt: { type: Date, default: Date.now },
+    redeemed: { type: Boolean, default: false },
+    manual: { type: Boolean, default: false },
+  }],
+}, { timestamps: true })
+
 module.exports = {
   Class: mongoose.model('Class', classSchema),
   Blog: mongoose.model('Blog', blogSchema),
@@ -74,4 +99,5 @@ module.exports = {
   Booking: mongoose.model('Booking', bookingSchema),
   Contact: mongoose.model('Contact', contactSchema),
   Newsletter: mongoose.model('Newsletter', newsletterSchema),
+  Member: mongoose.model('Member', memberSchema),
 }
